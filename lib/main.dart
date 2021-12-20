@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:yummy_chat_lecture3/screens/chat_screen.dart';
 import 'package:yummy_chat_lecture3/screens/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.blue
       ),
-      home: LoginSignupScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot){
+          if(snapshot.hasData){
+            return ChatScreen();
+          }
+          return LoginSignupScreen();
+        },
+      ),
     );
   }
 }
