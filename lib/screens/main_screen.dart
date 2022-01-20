@@ -3,6 +3,7 @@ import 'package:yummy_chat_lecture3/config/palette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yummy_chat_lecture3/screens/chat_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginSignupScreen extends StatefulWidget {
   const LoginSignupScreen({Key? key}) : super(key: key);
@@ -65,7 +66,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             children: [
                               TextSpan(
                                 text:
-                                    isSignupScreen ? ' to Yummy chat!' : ' back',
+                                isSignupScreen ? ' to Yummy chat!' : ' back',
                                 style: TextStyle(
                                   letterSpacing: 1.0,
                                   fontSize: 25,
@@ -443,6 +444,11 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               password: userPassword,
                             );
 
+                            await FirebaseFirestore.instance.collection('user').doc(newUser.user!.uid).set({
+                              'userName' : userName,
+                              'email' : userEmail
+                            });
+
                             if (newUser.user != null) {
                               Navigator.push(
                                 context,
@@ -461,10 +467,13 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content:
-                                    Text('Please check your email and password'),
+                                Text('Please check your email and password'),
                                 backgroundColor: Colors.blue,
                               ),
                             );
+                            setState(() {
+                              showSpinner = false;
+                            });
                           }
                         }
                         if (!isSignupScreen) {
@@ -477,20 +486,23 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               password: userPassword,
                             );
                             if (newUser.user != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return ChatScreen();
-                                  },
-                                ),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) {
+                              //       return ChatScreen();
+                              //     },
+                              //   ),
+                              // );
                               setState(() {
                                 showSpinner = false;
                               });
                             }
                           }catch(e){
                             print(e);
+                            setState(() {
+                              showSpinner = false;
+                            });
                           }
                         }
                       },
