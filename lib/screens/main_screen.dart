@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yummy_chat_lecture3/add_image/add_image.dart';
 import 'package:yummy_chat_lecture3/config/palette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yummy_chat_lecture3/screens/chat_screen.dart';
@@ -27,6 +28,18 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     if (isValid) {
       _formKey.currentState!.save();
     }
+  }
+
+  void showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: AddImage()
+        );
+      },
+    );
   }
 
   @override
@@ -65,8 +78,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 color: Colors.white),
                             children: [
                               TextSpan(
-                                text:
-                                isSignupScreen ? ' to Yummy chat!' : ' back',
+                                text: isSignupScreen
+                                    ? ' to Yummy chat!'
+                                    : ' back',
                                 style: TextStyle(
                                   letterSpacing: 1.0,
                                   fontSize: 25,
@@ -158,18 +172,36 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               },
                               child: Column(
                                 children: [
-                                  Text(
-                                    'SIGNUP',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: isSignupScreen
-                                            ? Palette.activeColor
-                                            : Palette.textColor1),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'SIGNUP',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: isSignupScreen
+                                                ? Palette.activeColor
+                                                : Palette.textColor1),
+                                      ),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          showAlert(context);
+                                        },
+                                        child: Icon(
+                                          Icons.image,
+                                          color: isSignupScreen
+                                              ? Colors.cyan
+                                              : Colors.grey[300],
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   if (isSignupScreen)
                                     Container(
-                                      margin: EdgeInsets.only(top: 3),
+                                      margin: EdgeInsets.fromLTRB(0, 3, 35, 0),
                                       height: 2,
                                       width: 55,
                                       color: Colors.orange,
@@ -444,10 +476,11 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               password: userPassword,
                             );
 
-                            await FirebaseFirestore.instance.collection('user').doc(newUser.user!.uid).set({
-                              'userName' : userName,
-                              'email' : userEmail
-                            });
+                            await FirebaseFirestore.instance
+                                .collection('user')
+                                .doc(newUser.user!.uid)
+                                .set(
+                                    {'userName': userName, 'email': userEmail});
 
                             if (newUser.user != null) {
                               Navigator.push(
@@ -466,8 +499,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             print(e);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content:
-                                Text('Please check your email and password'),
+                                content: Text(
+                                    'Please check your email and password'),
                                 backgroundColor: Colors.blue,
                               ),
                             );
@@ -480,8 +513,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           _tryValidation();
 
                           try {
-                            final newUser =
-                            await _authentication.signInWithEmailAndPassword(
+                            final newUser = await _authentication
+                                .signInWithEmailAndPassword(
                               email: userEmail,
                               password: userPassword,
                             );
@@ -498,7 +531,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 showSpinner = false;
                               });
                             }
-                          }catch(e){
+                          } catch (e) {
                             print(e);
                             setState(() {
                               showSpinner = false;
